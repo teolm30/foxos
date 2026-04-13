@@ -68,18 +68,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; o
 <div id="login">
   <div class="login-inner">
     <div class="login-avatar">&#128100;</div>
-    <div class="login-user">TEO</div>
+    <div id="luser-display" class="login-user" style="color:var(--text);margin-bottom:14px;">Enter your name</div>
+    <div class="login-field">
+      <span style="font-size:14px;opacity:0.5">&#128100;</span>
+      <input id="un" type="text" placeholder="Username" onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()" autocomplete="off">
+    </div>
     <div class="login-field">
       <span style="font-size:14px;opacity:0.5">&#128274;</span>
       <input id="pw" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
     </div>
     <button class="login-btn" onclick="login()">Sign In</button>
-    <div class="login-err" id="login-err">Incorrect password. Try again.</div>
-    <div class="login-sessions">
-      <div class="login-session active">TEO</div>
-      <div class="login-session">Guest</div>
-      <div class="login-session">List Users&#8230;</div>
-    </div>
+    <div class="login-err" id="login-err">Please enter your username.</div>
     <div class="login-links">
       <span>Forgot Password?</span>
       <span>Restart</span>
@@ -143,16 +142,19 @@ updateClock();
 setInterval(updateClock,10000);
 
 function login(){
-  const pw=document.getElementById('pw').value;
-  if(!pw){document.getElementById('login-err').style.display='block';setTimeout(()=>document.getElementById('login-err').style.display='none',3000);return;}
+  var un=document.getElementById('un').value.trim();
+  var pw=document.getElementById('pw').value;
+  if(!un){document.getElementById('login-err').textContent='Please enter your username.';document.getElementById('login-err').style.display='block';setTimeout(function(){document.getElementById('login-err').style.display='none';},3000);return;}
+  if(!pw){document.getElementById('login-err').textContent='Incorrect password. Try again.';document.getElementById('login-err').style.display='block';setTimeout(function(){document.getElementById('login-err').style.display='none';},3000);return;}
+  document.getElementById('luser-display').textContent=un;
   document.getElementById('login').style.transition='opacity 0.6s';
   document.getElementById('login').style.opacity='0';
-  setTimeout(()=>{
+  setTimeout(function(){
     document.getElementById('login').style.display='none';
     document.getElementById('desktop').style.display='block';
     document.querySelector('.menubar').style.display='flex';
     document.querySelector('.dock-wrap').style.display='block';
-    setTimeout(()=>showNotif('Welcome to FoxOS! &#127822;','FoxOS v0.1 &#8212; build 2026.04.13'),400);
+    setTimeout(function(){showNotif('Welcome to '+un+'! &#127822;','FoxOS v0.1 &#8212; build 2026.04.13');},400);
   },600);
 }
 
