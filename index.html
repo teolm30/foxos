@@ -1377,6 +1377,8 @@ function updateSysmon() {
 }
 
 /* ==================== BOOT SEQUENCE ==================== */
+
+console.log('[FoxOS] Page loaded, starting boot sequence...');
 (function bootSeq() {
   const splash = document.createElement('div');
   splash.id = 'boot-splash';
@@ -1423,7 +1425,7 @@ function updateSysmon() {
 function showLoginScreen() {
   const loginDiv = document.createElement('div');
   loginDiv.id = 'login-screen';
-  loginDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:url(login_bg.jpg) center/cover no-repeat;display:flex;align-items:center;justify-content:center;';
+  loginDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);display:flex;align-items:center;justify-content:center;';
   loginDiv.innerHTML = `
     <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(10,10,20,0.65);"></div>
     <div style="position:relative;z-index:2;width:300px;text-align:center;animation:slideUp 0.5s cubic-bezier(0.22,1,0.36,1);">
@@ -1474,4 +1476,5 @@ function doLogin() {
 }
 </script>
 </body>
-</html>
+</html
+console.log('[FoxOS] Boot done, showing login screen...');>
