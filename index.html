@@ -3,100 +3,1433 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FoxOS — Real Linux Desktop in Your Browser</title>
+<title>FoxOS</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --fox-blue: #2997ff;
+  --fox-accent: #0a84ff;
+  --bar-bg: rgba(30,30,30,0.82);
+  --dock-bg: rgba(50,50,50,0.75);
+  --win-bg: rgba(36,36,36,0.97);
+  --win-title: rgba(50,50,50,0.98);
+  --text: #e8e8ed;
+  --text-dim: #8e8e93;
+  --border: rgba(255,255,255,0.08);
+  --hover: rgba(255,255,255,0.06);
+  --dock-item: rgba(255,255,255,0.85);
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 50%, #0f0f23 100%);
-  min-height: 100vh; color: #e0e0e0; overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  background: url('foxos_wallpaper.jpg') center/cover no-repeat;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
 }
-.hero { text-align: center; padding: 80px 20px 40px; position: relative; }
-.hero::before {
-  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
-  pointer-events: none;
+
+/* ===== MENU BAR ===== */
+.menubar {
+  position: fixed; top: 0; left: 0; right: 0; height: 28px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex; align-items: center;
+  padding: 0 12px;
+  z-index: 9999;
+  border-bottom: 1px solid var(--border);
 }
-.logo svg { width: 110px; height: 110px; filter: drop-shadow(0 0 30px rgba(0,210,255,0.4)); }
-h1 { font-size: 3.5rem; font-weight: 700; letter-spacing: -2px; margin: 20px 0 10px; background: linear-gradient(135deg, #00d2ff, #7b2dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.tagline { font-size: 1.3rem; color: #888; margin-bottom: 40px; }
-.real-desktop {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(20px); border-radius: 20px; padding: 50px; max-width: 580px;
-  margin: 0 auto 40px; text-align: center;
+
+.menubar-left { display:flex; align-items:center; gap:14px; flex:1; }
+.menubar-right { display:flex; align-items:center; gap:10px; }
+
+.fox-logo {
+  font-size: 15px; color: var(--text); font-weight: 600;
+  letter-spacing: -0.3px;
 }
-.version { font-size: 0.85rem; color: #00d2ff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
-.btn {
-  display: inline-block; background: linear-gradient(135deg, #00d2ff, #7b2dff);
-  color: #fff; padding: 16px 44px; border-radius: 60px; font-size: 1.15rem; font-weight: 600;
-  text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 8px 30px rgba(0,210,255,0.3); margin: 10px;
+.fox-logo svg { width:14px; height:14px; vertical-align:middle; margin-right:4px; }
+
+.menu-item {
+  font-size: 12.5px; color: var(--text); font-weight: 400;
+  padding: 2px 8px; border-radius: 4px; cursor: default;
+  transition: background 0.15s;
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,210,255,0.4); }
-.btn.green { background: linear-gradient(135deg, #28ca41, #00c853); box-shadow: 0 8px 30px rgba(40,202,65,0.3); }
-.btn.green:hover { box-shadow: 0 12px 40px rgba(40,202,65,0.4); }
-.features { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
-.features h2 { text-align: center; font-size: 1.8rem; margin-bottom: 35px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 26px; }
-.card h3 { color: #00d2ff; margin-bottom: 8px; font-size: 1rem; }
-.card p { color: #888; line-height: 1.6; font-size: 0.88rem; }
-.features-demo { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-.features-demo h2 { text-align: center; }
-.screenshot { width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.5); margin-bottom: 30px; }
-footer { text-align: center; padding: 30px; color: #444; font-size: 0.82rem; }
-.live-badge {
-  display: inline-block; background: rgba(40,202,65,0.15); border: 1px solid rgba(40,202,65,0.3);
-  color: #28ca41; padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; margin-bottom: 16px;
-  animation: pulse 2s infinite;
+.menu-item:hover { background: rgba(255,255,255,0.12); }
+
+.menubar-icons { display:flex; gap:8px; align-items:center; }
+.menubar-icon {
+  font-size: 13px; color: var(--text); cursor: default;
+  padding: 2px 4px;
 }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.menubar-time {
+  font-size: 12.5px; color: var(--text); font-weight: 500;
+  padding: 2px 8px;
+}
+
+/* ===== DESKTOP ===== */
+.desktop {
+  position: fixed; top:28px; left:0; right:0; bottom:72px;
+  padding: 16px 20px;
+}
+
+.desktop-icon {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; cursor: pointer; padding: 8px; border-radius: 8px;
+  transition: background 0.15s;
+  margin-bottom: 12px;
+  width: 80px;
+}
+.desktop-icon:hover { background: rgba(255,255,255,0.08); }
+.desktop-icon:active .icon-img { transform: scale(0.95); }
+
+.icon-img {
+  width: 64px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  transition: transform 0.15s;
+}
+.icon-label {
+  font-size: 11.5px; color: #fff; font-weight: 500;
+  text-align: center; max-width: 72px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  line-height: 1.3;
+}
+
+/* ===== DOCK ===== */
+.dock-wrap {
+  position: fixed; bottom: 6px; left: 50%; transform: translateX(-50%);
+  z-index: 9999;
+}
+.dock {
+  display: flex; align-items: flex-end; gap: 4px;
+  background: var(--dock-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+}
+
+.dock-sep { width: 1px; height: 44px; background: rgba(255,255,255,0.15); margin: 0 4px; align-self: center; }
+
+.dock-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; padding: 2px;
+  position: relative;
+  border-radius: 10px;
+  transition: transform 0.15s;
+}
+.dock-item:hover {
+  transform: translateY(-8px) scale(1.15);
+}
+.dock-item:active { transform: translateY(-4px) scale(1.05); }
+
+.dock-icon {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  overflow: hidden;
+}
+.dock-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+
+.dock-label {
+  font-size: 10px; color: #fff; font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.dock-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+}
+
+/* ===== WINDOWS ===== */
+.window {
+  position: absolute;
+  background: var(--win-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  min-width: 400px; min-height: 260px;
+}
+
+.window.maximized {
+  top: 0 !important; left: 0 !important;
+  width: 100vw !important; height: calc(100vh - 28px - 72px) !important;
+  border-radius: 0;
+}
+
+.win-titlebar {
+  height: 36px; background: var(--win-title);
+  display: flex; align-items: center;
+  padding: 0 12px; gap: 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+}
+
+.win-controls {
+  display: flex; gap: 7px; align-items: center;
+}
+.win-btn {
+  width: 13px; height: 13px; border-radius: 50%;
+  cursor: pointer; transition: filter 0.15s;
+}
+.win-btn:hover { filter: brightness(0.85); }
+.win-btn.close { background: #ff5f57; }
+.win-btn.minimize { background: #ffbd2e; }
+.win-btn.maximize { background: #28c840; }
+
+.win-title {
+  font-size: 12.5px; color: var(--text); font-weight: 500;
+  flex: 1; text-align: center; padding-right: 60px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.win-toolbar {
+  height: 34px; background: rgba(44,44,44,0.6);
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 12px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.win-toolbar-btn {
+  font-size: 13px; color: var(--text-dim); cursor: pointer;
+  padding: 3px 8px; border-radius: 4px; transition: all 0.15s;
+}
+.win-toolbar-btn:hover { background: var(--hover); color: var(--text); }
+
+.win-content {
+  flex: 1; overflow: auto; padding: 0;
+  display: flex; flex-direction: column;
+}
+
+/* ===== SETTINGS APP ===== */
+.settings-nav {
+  width: 180px; background: rgba(30,30,30,0.5);
+  border-right: 1px solid var(--border);
+  padding: 8px 0; flex-shrink: 0;
+}
+.settings-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 14px; font-size: 13px; color: var(--text);
+  cursor: pointer; transition: background 0.15s; border-radius: 0;
+}
+.settings-nav-item:hover { background: var(--hover); }
+.settings-nav-item.active { background: rgba(41,151,255,0.18); color: var(--fox-blue); }
+.settings-nav-item svg { font-size: 16px; width: 18px; text-align: center; }
+
+.settings-main {
+  flex: 1; padding: 20px 24px; overflow-y: auto;
+}
+
+.settings-header {
+  font-size: 22px; font-weight: 700; color: var(--text);
+  margin-bottom: 4px;
+}
+.settings-subheader {
+  font-size: 12px; color: var(--text-dim); margin-bottom: 24px;
+}
+
+.settings-section {
+  margin-bottom: 24px;
+}
+.settings-section-title {
+  font-size: 11px; font-weight: 600; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  margin-bottom: 12px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 13px; color: var(--text); }
+.settings-value { font-size: 12px; color: var(--text-dim); }
+
+.version-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(41,151,255,0.15); color: var(--fox-blue);
+  font-size: 12px; font-weight: 600; padding: 4px 12px;
+  border-radius: 20px; border: 1px solid rgba(41,151,255,0.3);
+}
+
+.update-btn {
+  background: var(--fox-accent); color: #fff;
+  font-size: 12px; font-weight: 600; padding: 6px 16px;
+  border-radius: 6px; cursor: pointer; border: none;
+  transition: opacity 0.15s;
+}
+.update-btn:hover { opacity: 0.85; }
+.update-btn:disabled { opacity: 0.5; cursor: default; }
+
+.update-progress {
+  height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px;
+  margin-top: 10px; overflow: hidden; display: none;
+}
+.update-progress-bar {
+  height: 100%; background: var(--fox-blue); border-radius: 2px;
+  width: 0%; transition: width 0.3s;
+}
+
+/* ===== FILES APP ===== */
+.files-sidebar {
+  width: 160px; background: rgba(28,28,28,0.5);
+  border-right: 1px solid var(--border);
+  padding: 8px 0; flex-shrink: 0;
+}
+.files-sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; font-size: 12.5px; color: var(--text);
+  cursor: pointer; transition: background 0.15s;
+}
+.files-sidebar-item:hover { background: var(--hover); }
+.files-sidebar-item.active { background: rgba(41,151,255,0.15); color: var(--fox-blue); }
+
+.files-content { flex: 1; padding: 12px 16px; overflow-y: auto; }
+.files-path-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px; background: rgba(50,50,50,0.5);
+  border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-dim);
+}
+.files-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(90px,1fr)); gap: 8px; }
+.file-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 5px; padding: 10px 6px; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s;
+}
+.file-item:hover { background: rgba(255,255,255,0.06); }
+.file-icon { font-size: 38px; }
+.file-name { font-size: 11px; color: var(--text); text-align: center; word-break: break-all; line-height: 1.3; }
+
+/* ===== TERMINAL APP ===== */
+.terminal-body {
+  background: rgba(12,12,12,0.95); flex: 1; padding: 12px;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px; color: #00ff9d; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.terminal-line { display: flex; gap: 8px; line-height: 1.5; }
+.terminal-prompt { color: #00a8ff; white-space: nowrap; }
+.terminal-cmd { color: #e8e8ed; }
+.terminal-out { color: rgba(255,255,255,0.7); white-space: pre-wrap; }
+.terminal-input {
+  background: transparent; border: none; outline: none;
+  color: #e8e8ed; font-family: inherit; font-size: inherit;
+  flex: 1; min-width: 100px;
+}
+.terminal-input::placeholder { color: rgba(255,255,255,0.2); }
+
+/* ===== CALCULATOR ===== */
+.calc-display {
+  background: rgba(20,20,20,0.9); padding: 14px 16px; text-align: right;
+  font-size: 36px; font-weight: 300; color: #fff;
+  font-family: 'Inter', sans-serif; letter-spacing: -1px;
+  min-height: 60px; word-break: break-all;
+}
+.calc-display-sub { font-size: 14px; color: var(--text-dim); font-weight: 400; margin-top: 2px; }
+.calc-buttons {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  background: rgba(0,0,0,0.3); flex: 1;
+}
+.calc-btn {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff; cursor: pointer;
+  background: rgba(60,60,60,0.4); transition: background 0.1s;
+  border: none; padding: 0;
+}
+.calc-btn:hover { background: rgba(80,80,80,0.5); }
+.calc-btn:active { background: rgba(100,100,100,0.6); }
+.calc-btn.op { background: rgba(41,151,255,0.25); color: var(--fox-blue); }
+.calc-btn.op:hover { background: rgba(41,151,255,0.4); }
+.calc-btn.equals { background: var(--fox-accent); color: #fff; }
+.calc-btn.equals:hover { background: #2980ff; }
+.calc-btn.fn { background: rgba(80,80,80,0.35); color: var(--text); font-size: 16px; }
+.calc-btn.fn:hover { background: rgba(100,100,100,0.5); }
+
+/* ===== APP STORE ===== */
+.appstore-bar {
+  height: 50px; background: rgba(30,30,30,0.7);
+  display: flex; align-items: center; padding: 0 16px; gap: 10px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.appstore-search {
+  flex: 1; background: rgba(60,60,60,0.5); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 12px; color: var(--text);
+  font-size: 13px; outline: none; font-family: inherit;
+}
+.appstore-search::placeholder { color: var(--text-dim); }
+.app-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); gap: 16px; padding: 16px; }
+.app-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; cursor: pointer; padding: 12px 8px; border-radius: 12px;
+  transition: background 0.15s;
+}
+.app-card:hover { background: rgba(255,255,255,0.06); }
+.app-icon-large { width: 72px; height: 72px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 42px; overflow: hidden; }
+.app-icon-large img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+.app-name { font-size: 12px; color: var(--text); font-weight: 500; text-align: center; }
+.app-dev { font-size: 11px; color: var(--text-dim); }
+.app-get-btn {
+  background: rgba(41,151,255,0.15); color: var(--fox-blue);
+  font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 12px;
+  border: 1px solid rgba(41,151,255,0.3);
+}
+
+/* ===== TEXT EDITOR ===== */
+.editor-bar {
+  height: 36px; background: rgba(44,44,44,0.6);
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.editor-bar-btn {
+  font-size: 12px; color: var(--text-dim); cursor: pointer;
+  padding: 3px 10px; border-radius: 4px; transition: all 0.15s;
+}
+.editor-bar-btn:hover { background: var(--hover); color: var(--text); }
+.editor-textarea {
+  flex: 1; background: rgba(20,20,20,0.8); color: #e8e8ed;
+  border: none; outline: none; resize: none;
+  padding: 16px; font-family: 'SF Mono', 'Cascadia Code', monospace;
+  font-size: 13px; line-height: 1.6;
+}
+
+/* ===== WELCOME APP ===== */
+.welcome-content {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 24px;
+  padding: 40px;
+}
+.welcome-logo { font-size: 80px; }
+.welcome-title { font-size: 28px; font-weight: 700; color: var(--text); }
+.welcome-subtitle { font-size: 16px; color: var(--text-dim); text-align: center; }
+.welcome-btns { display: flex; gap: 12px; margin-top: 8px; }
+.welcome-btn {
+  padding: 10px 24px; border-radius: 8px; font-size: 14px;
+  font-weight: 600; cursor: pointer; border: none; transition: opacity 0.15s;
+}
+.welcome-btn:hover { opacity: 0.85; }
+.welcome-btn.primary { background: var(--fox-accent); color: #fff; }
+.welcome-btn.secondary { background: rgba(255,255,255,0.1); color: var(--text); }
+
+/* ===== SYSTEM MONITOR ===== */
+.sysmon-header {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 12px; background: rgba(20,20,20,0.4); border-bottom: 1px solid var(--border);
+}
+.sysmon-stat {
+  background: rgba(50,50,50,0.5); border-radius: 8px; padding: 12px; text-align: center;
+}
+.sysmon-stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.sysmon-stat-value { font-size: 20px; font-weight: 600; color: var(--text); }
+.sysmon-stat-sub { font-size: 11px; color: var(--text-dim); }
+.sysmon-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.sysmon-bar-fill { height: 100%; border-radius: 2px; transition: width 1s; }
+.cpu-bar { background: #ff5f57; }
+.mem-bar { background: #ffbd2e; }
+.disk-bar { background: #28c840; }
+
+.sysmon-procs { flex: 1; overflow-y: auto; }
+.proc-row {
+  display: grid; grid-template-columns: 50px 1fr 80px 80px; gap: 8px;
+  padding: 6px 12px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  align-items: center;
+}
+.proc-row:hover { background: rgba(255,255,255,0.03); }
+.proc-pid { color: var(--text-dim); }
+.proc-name { color: var(--text); }
+.proc-cpu, .proc-mem { color: var(--text-dim); text-align: right; }
+
+/* ===== MISC ===== */
+.loading-spinner {
+  width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--fox-blue); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 20px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.notif-badge {
+  position: fixed; top: 36px; right: 16px;
+  background: rgba(40,40,40,0.95); border-radius: 12px;
+  padding: 12px 16px; display: none; flex-direction:column; gap: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 99999;
+  border: 1px solid var(--border); min-width: 280px;
+  animation: slideIn 0.3s ease;
+}
+.notif-badge.show { display: flex; }
+.notif-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.notif-body { font-size: 12px; color: var(--text-dim); }
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+iframe.embedded-site {
+  width: 100%; height: 100%; border: none; background: #fff;
+}
 </style>
 </head>
 <body>
-<div class="hero">
-  <div class="logo">
-    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d2ff"/><stop offset="100%" stop-color="#7b2dff"/></linearGradient></defs>
-      <circle cx="50" cy="50" r="48" fill="none" stroke="url(#fg)" stroke-width="3"/>
-      <circle cx="50" cy="50" r="35" fill="rgba(0,210,255,0.1)"/>
-      <polygon points="50,8 62,35 50,28 38,35" fill="url(#fg)"/>
-      <polygon points="25,30 38,50 30,48 20,40" fill="url(#fg)" opacity="0.8"/>
-      <polygon points="75,30 62,50 70,48 80,40" fill="url(#fg)" opacity="0.8"/>
-      <ellipse cx="50" cy="55" rx="20" ry="18" fill="none" stroke="url(#fg)" stroke-width="2.5"/>
-      <circle cx="42" cy="50" r="3" fill="#00d2ff"/>
-      <circle cx="58" cy="50" r="3" fill="#7b2dff"/>
-      <path d="M35 62 Q50 72 65 62" fill="none" stroke="url(#fg)" stroke-width="2" stroke-linecap="round"/>
-    </svg>
+
+<!-- NOTIFICATION -->
+<div class="notif-badge" id="notif">
+  <div class="notif-title" id="notifTitle">FoxOS Update</div>
+  <div class="notif-body" id="notifBody">A new version is available!</div>
+</div>
+
+<!-- MENU BAR -->
+<div class="menubar">
+  <div class="menubar-left">
+    <span class="fox-logo">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="#2997ff">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/>
+      </svg>
+      FoxOS
+    </span>
+    <span class="menu-item">File</span>
+    <span class="menu-item">Edit</span>
+    <span class="menu-item">View</span>
+    <span class="menu-item">Go</span>
+    <span class="menu-item">Window</span>
+    <span class="menu-item">Help</span>
   </div>
-  <h1>FoxOS</h1>
-  <p class="tagline">A real Linux desktop OS — in your browser, anywhere in the world.</p>
-  <div class="real-desktop">
-    <div class="live-badge">● LIVE DEMO RUNNING</div>
-    <p class="version">Version 1.0</p>
-    <h2 style="font-size:1.3rem;margin-bottom:8px">Try the Real Desktop Now</h2>
-    <p style="color:#888;font-size:0.85rem;margin-bottom:24px">
-      A complete OS running on Teo's Linux PC — not a screenshot.<br>
-      Files, Terminal, System Monitor, Settings, Calculator — all real.
-    </p>
-    <a class="btn green" href="https://tablets-christina-signals-delayed.trycloudflare.com" target="_blank">🖥️ Open FoxOS Desktop</a>
-    <a class="btn" href="https://github.com/teolm30/foxos/releases/tag/v1.0.0" target="_blank">⬇ Download ISO</a>
+  <div class="menubar-right">
+    <div class="menubar-icons">
+      <span class="menubar-icon">🔋</span>
+      <span class="menubar-icon">📶</span>
+      <span class="menubar-icon" id="clock"></span>
+    </div>
   </div>
 </div>
-<div class="features-demo">
-  <h2>What's Inside FoxOS</h2>
-  <img class="screenshot" src="foxos_desktop.png" alt="FoxOS Desktop">
-  <div class="grid">
-    <div class="card"><h3>🖥️ Real Web Desktop</h3><p>Complete window manager in the browser. Drag windows, resize, minimize, maximize — all functional.</p></div>
-    <div class="card"><h3>📁 Real File Manager</h3><p>Browse and edit actual files on the Linux filesystem. Create folders, open files in the editor.</p></div>
-    <div class="card"><h3>⌨️ Real Terminal</h3><p>Execute real Linux commands. ls, cat, ps, df, free, neofetch — all work.</p></div>
-    <div class="card"><h3>📊 Real System Monitor</h3><p>See real CPU, RAM, disk usage from psutil. View and kill real processes.</p></div>
-    <div class="card"><h3>⚙️ Real Settings</h3><p>Volume, brightness, network, users, display — all backed by real Linux system calls.</p></div>
-    <div class="card"><h3>🔄 Software Updates</h3><p>Checks GitHub for new versions. Shows real update history and version info.</p></div>
-    <div class="card"><h3>🍷 Wine 11 Included</h3><p>Run Windows apps including Roblox Studio directly on the Linux desktop.</p></div>
-    <div class="card"><h3>💿 Bootable ISO</h3><p>Download FoxOS as a bootable USB — runs natively on any x86_64 hardware.</p></div>
+
+<!-- DESKTOP -->
+<div class="desktop" id="desktop">
+
+  <!-- My Computer -->
+  <div class="desktop-icon" ondblclick="openApp('settings')" title="System Settings">
+    <div class="icon-img">💻</div>
+    <div class="icon-label">My Computer</div>
+  </div>
+
+  <!-- Files -->
+  <div class="desktop-icon" ondblclick="openApp('files')" title="File Manager">
+    <div class="icon-img">📁</div>
+    <div class="icon-label">Files</div>
+  </div>
+
+  <!-- Terminal -->
+  <div class="desktop-icon" ondblclick="openApp('terminal')" title="Terminal">
+    <div class="icon-img">⬛</div>
+    <div class="icon-label">Terminal</div>
+  </div>
+
+  <!-- App Store -->
+  <div class="desktop-icon" ondblclick="openApp('appstore')" title="App Store">
+    <div class="icon-img">🛒</div>
+    <div class="icon-label">App Store</div>
+  </div>
+
+  <!-- Settings -->
+  <div class="desktop-icon" ondblclick="openApp('settings')" title="System Settings">
+    <div class="icon-img">⚙️</div>
+    <div class="icon-label">Settings</div>
+  </div>
+
+  <!-- Calculator -->
+  <div class="desktop-icon" ondblclick="openApp('calculator')" title="Calculator">
+    <div class="icon-img">🔢</div>
+    <div class="icon-label">Calculator</div>
+  </div>
+
+  <!-- TextEdit -->
+  <div class="desktop-icon" ondblclick="openApp('editor')" title="Text Editor">
+    <div class="icon-img">📝</div>
+    <div class="icon-label">TextEdit</div>
+  </div>
+
+  <!-- System Monitor -->
+  <div class="desktop-icon" ondblclick="openApp('sysmon')" title="Activity Monitor">
+    <div class="icon-img">📊</div>
+    <div class="icon-label">Activity Monitor</div>
+  </div>
+
+</div>
+
+<!-- WINDOWS CONTAINER -->
+<div id="windows-container" style="position:fixed;top:28px;left:0;right:0;bottom:72px;pointer-events:none;">
+</div>
+
+<!-- DOCK -->
+<div class="dock-wrap">
+  <div class="dock">
+
+    <div class="dock-item" ondblclick="openApp('finder')">
+      <div class="dock-icon">📁</div>
+      <span class="dock-label">Files</span>
+    </div>
+
+    <div class="dock-item" ondblclick="openApp('terminal')">
+      <div class="dock-icon">⬛</div>
+      <span class="dock-label">Terminal</span>
+      <div class="dock-dot"></div>
+    </div>
+
+    <div class="dock-item" ondblclick="openApp('appstore')">
+      <div class="dock-icon">🛒</div>
+      <span class="dock-label">App Store</span>
+    </div>
+
+    <div class="dock-sep"></div>
+
+    <div class="dock-item" ondblclick="openApp('settings')">
+      <div class="dock-icon">⚙️</div>
+      <span class="dock-label">Settings</span>
+    </div>
+
+    <div class="dock-item" ondblclick="openApp('sysmon')">
+      <div class="dock-icon">📊</div>
+      <span class="dock-label">Monitor</span>
+    </div>
+
+    <div class="dock-item" ondblclick="openApp('calculator')">
+      <div class="dock-icon">🔢</div>
+      <span class="dock-label">Calc</span>
+    </div>
+
+    <div class="dock-item" ondblclick="openApp('editor')">
+      <div class="dock-icon">📝</div>
+      <span class="dock-label">TextEdit</span>
+    </div>
+
+    <div class="dock-sep"></div>
+
+    <div class="dock-item" onclick="openExternal('https://github.com/teolm30/foxos')">
+      <div class="dock-icon">🦊</div>
+      <span class="dock-label">FoxOS</span>
+    </div>
+
   </div>
 </div>
-<footer>FoxOS — Built with ❤️ by Teo & Jarvis · <a href="https://github.com/teolm30/foxos" style="color:#555">GitHub</a></footer>
+
+<script>
+/* ================================================
+   FoxOS Web Desktop Simulation
+   Matches FoxOS v0.1 (build 2026.04.13)
+   ================================================ */
+
+let zIndex = 100;
+let activeWindow = null;
+let dragState = null;
+let winCounter = 0;
+let dockVisible = true;
+
+const WIN_WIDTH = 720;
+const WIN_HEIGHT = 480;
+
+function newWinId() { return 'win-' + (++winCounter); }
+
+function bringToFront(el) {
+  zIndex++;
+  el.style.zIndex = zIndex;
+  activeWindow = el;
+}
+
+/* ---- Window Creation ---- */
+function createWindow({id, title, icon, width, height, minWidth, minHeight, content}) {
+  const wid = id || newWinId();
+  if (document.getElementById(wid)) {
+    bringToFront(document.getElementById(wid));
+    return;
+  }
+  const w = width || WIN_WIDTH;
+  const h = height || WIN_HEIGHT;
+  const l = Math.max(40, (window.innerWidth - w) / 2 + Math.random() * 80 - 40);
+  const t = Math.max(40, (window.innerHeight - 28 - 72 - h) / 2 + Math.random() * 60 - 30);
+
+  const el = document.createElement('div');
+  el.className = 'window';
+  el.id = wid;
+  el.style.cssText = `left:${l}px; top:${t}px; width:${w}px; height:${h}px; z-index:${zIndex++}`;
+  if (minWidth) el.style.minWidth = minWidth + 'px';
+  if (minHeight) el.style.minHeight = minHeight + 'px';
+
+  el.innerHTML = `
+    <div class="win-titlebar">
+      <div class="win-controls" onmousedown="event.stopPropagation()">
+        <div class="win-btn close" onclick="closeWindow('${wid}')"></div>
+        <div class="win-btn minimize" onclick="minimizeWindow('${wid}')"></div>
+        <div class="win-btn maximize" onclick="maximizeWindow('${wid}')"></div>
+      </div>
+      <div class="win-title">${icon} ${title}</div>
+    </div>
+    <div class="win-content">${content}</div>
+  `;
+
+  document.getElementById('windows-container').appendChild(el);
+  setupWindowDrag(el);
+  el.addEventListener('mousedown', () => bringToFront(el));
+  bringToFront(el);
+  return el;
+}
+
+function closeWindow(id) {
+  const el = document.getElementById(id);
+  if (el) { el.remove(); if (activeWindow === el) activeWindow = null; }
+}
+function minimizeWindow(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+}
+function maximizeWindow(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.classList.contains('maximized')) {
+    el.classList.remove('maximized');
+    el.style.top = el.dataset.prevTop || '';
+    el.style.left = el.dataset.prevLeft || '';
+    el.style.width = el.dataset.prevW || '';
+    el.style.height = el.dataset.prevH || '';
+  } else {
+    el.dataset.prevTop = el.style.top;
+    el.dataset.prevLeft = el.style.left;
+    el.dataset.prevW = el.style.width;
+    el.dataset.prevH = el.style.height;
+    el.classList.add('maximized');
+  }
+}
+
+/* ---- Window Drag ---- */
+function setupWindowDrag(el) {
+  const tb = el.querySelector('.win-titlebar');
+  tb.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('win-controls') || e.target.classList.contains('win-btn')) return;
+    if (el.classList.contains('maximized')) return;
+    e.preventDefault();
+    dragState = {
+      el,
+      startX: e.clientX, startY: e.clientY,
+      origLeft: parseFloat(el.style.left) || 0,
+      origTop: parseFloat(el.style.top) || 0
+    };
+    bringToFront(el);
+  });
+}
+
+document.addEventListener('mousemove', e => {
+  if (!dragState) return;
+  const dx = e.clientX - dragState.startX;
+  const dy = e.clientY - dragState.startY;
+  dragState.el.style.left = (dragState.origLeft + dx) + 'px';
+  dragState.el.style.top = (dragState.origTop + dy) + 'px';
+});
+document.addEventListener('mouseup', () => { dragState = null; });
+
+/* ---- Clock ---- */
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes().toString().padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  document.getElementById('clock').textContent = `${h12}:${m} ${ampm}`;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+/* ---- Apps ---- */
+function openApp(name) {
+  switch(name) {
+    case 'settings': openSettings(); break;
+    case 'files': openFiles(); break;
+    case 'terminal': openTerminal(); break;
+    case 'calculator': openCalculator(); break;
+    case 'appstore': openAppStore(); break;
+    case 'editor': openEditor(); break;
+    case 'sysmon': openSysmon(); break;
+    case 'finder': openFiles(); break;
+    case 'welcome': openWelcome(); break;
+  }
+}
+
+function openExternal(url) {
+  window.open(url, '_blank');
+}
+
+/* ==================== SETTINGS ==================== */
+function openSettings() {
+  const content = `
+    <div style="display:flex; flex:1; overflow:hidden;">
+      <div class="settings-nav">
+        <div class="settings-nav-item active" onclick="settingsNav(this,'general')">
+          <span>⚙️</span> General
+        </div>
+        <div class="settings-nav-item" onclick="settingsNav(this,'appearance')">
+          <span>🎨</span> Appearance
+        </div>
+        <div class="settings-nav-item" onclick="settingsNav(this,'updates')">
+          <span>🔄</span> Software Update
+        </div>
+        <div class="settings-nav-item" onclick="settingsNav(this,'users')">
+          <span>👤</span> Users
+        </div>
+        <div class="settings-nav-item" onclick="settingsNav(this,'about')">
+          <span>ℹ️</span> About
+        </div>
+      </div>
+      <div class="settings-main" id="settings-main">
+        <div class="settings-header">General</div>
+        <div class="settings-subheader">System preferences and configuration</div>
+        <div class="settings-section">
+          <div class="settings-section-title">System</div>
+          <div class="settings-row">
+            <span class="settings-label">Computer Name</span>
+            <span class="settings-value">foxOS-PC</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Hostname</span>
+            <span class="settings-value">foxos</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Shell</span>
+            <span class="settings-value">bash 5.2.21</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Network</div>
+          <div class="settings-row">
+            <span class="settings-label">Ethernet</span>
+            <span class="settings-value" style="color:#28c840">● Connected</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">IP Address</span>
+            <span class="settings-value">192.168.1.100</span>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Date & Time</div>
+          <div class="settings-row">
+            <span class="settings-label">Date</span>
+            <span class="settings-value">April 13, 2026</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Time</span>
+            <span class="settings-value">4:22 PM</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Timezone</span>
+            <span class="settings-value">Europe/Athens (GMT+3)</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  createWindow({id:'settings', title:'System Settings', icon:'⚙️', width:640, height:480, content});
+}
+
+function settingsNav(el, tab) {
+  el.parentElement.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const main = document.getElementById('settings-main');
+  if (tab === 'general') {
+    main.innerHTML = `
+      <div class="settings-header">General</div>
+      <div class="settings-subheader">System preferences and configuration</div>
+      <div class="settings-section"><div class="settings-section-title">System</div>
+        <div class="settings-row"><span class="settings-label">Computer Name</span><span class="settings-value">foxOS-PC</span></div>
+        <div class="settings-row"><span class="settings-label">Hostname</span><span class="settings-value">foxos</span></div>
+        <div class="settings-row"><span class="settings-label">Shell</span><span class="settings-value">bash 5.2.21</span></div>
+      </div>
+      <div class="settings-section"><div class="settings-section-title">Network</div>
+        <div class="settings-row"><span class="settings-label">Ethernet</span><span class="settings-value" style="color:#28c840">● Connected</span></div>
+        <div class="settings-row"><span class="settings-label">IP Address</span><span class="settings-value">192.168.1.100</span></div>
+      </div>`;
+  } else if (tab === 'updates') {
+    main.innerHTML = `
+      <div class="settings-header">Software Update</div>
+      <div class="settings-subheader">FoxOS v0.1 — build 2026.04.13</div>
+      <div class="settings-section"><div class="settings-section-title">Current Version</div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+          <span class="version-badge">🍎 FoxOS v0.1</span>
+          <span style="font-size:12px;color:var(--text-dim);">You are running the latest version of FoxOS.</span>
+        </div>
+      </div>
+      <div class="settings-section"><div class="settings-section-title">Automatic Updates</div>
+        <div class="settings-row">
+          <span class="settings-label">Check for Updates</span>
+          <select style="background:rgba(60,60,60,0.5);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;">
+            <option>Daily</option><option>Weekly</option><option>Monthly</option><option>Manually</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Auto-Download Updates</span>
+          <label style="position:relative;display:inline-block;width:36px;height:20px;">
+            <input type="checkbox" checked style="opacity:0;width:0;height:0;">
+            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#2997ff;border-radius:10px;transition:0.2s;"></span>
+          </label>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="update-btn" id="checkUpdateBtn" onclick="simulateUpdateCheck()">Check for Updates</button>
+        <div class="update-progress" id="updateProgress">
+          <div class="update-progress-bar" id="updateBar"></div>
+        </div>
+      </div>`;
+  } else if (tab === 'about') {
+    main.innerHTML = `
+      <div class="settings-header">About FoxOS</div>
+      <div class="settings-subheader">Built from Ubuntu 24.04 LTS</div>
+      <div class="settings-section"><div class="settings-section-title">Version</div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+          <span class="version-badge">🍎 FoxOS v0.1</span>
+          <span style="font-size:12px;color:var(--text-dim);">Build: 2026.04.13</span>
+          <span style="font-size:12px;color:var(--text-dim);">Kernel: 6.8.0-51-generic</span>
+          <span style="font-size:12px;color:var(--text-dim);">Platform: x86_64 Linux</span>
+        </div>
+      </div>
+      <div class="settings-section"><div class="settings-section-title">System</div>
+        <div class="settings-row"><span class="settings-label">Memory</span><span class="settings-value">7.6 GB DDR4</span></div>
+        <div class="settings-row"><span class="settings-label">Storage</span><span class="settings-value">512 GB SSD</span></div>
+        <div class="settings-row"><span class="settings-label">Processor</span><span class="settings-value">Intel Core i5-12400F</span></div>
+        <div class="settings-row"><span class="settings-label">Graphics</span><span class="settings-value">NVIDIA GeForce RTX 3060</span></div>
+      </div>
+      <div class="settings-section"><div class="settings-section-title">Credits</div>
+        <div class="settings-row"><span class="settings-label">Theme</span><span class="settings-value">Greybird-Dark + Papirus Icons</span></div>
+        <div class="settings-row"><span class="settings-label">Desktop</span><span class="settings-value">XFCE 4.18</span></div>
+        <div class="settings-row"><span class="settings-label">Display Manager</span><span class="settings-value">LightDM</span></div>
+      </div>`;
+  } else if (tab === 'appearance') {
+    main.innerHTML = `
+      <div class="settings-header">Appearance</div>
+      <div class="settings-subheader">Customize the look of FoxOS</div>
+      <div class="settings-section"><div class="settings-section-title">Theme</div>
+        <div class="settings-row">
+          <span class="settings-label">Dark Mode</span>
+          <span style="font-size:12px;color:#28c840;font-weight:600;">Active (FoxOS Dark)</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">GTK Theme</span>
+          <span class="settings-value">Greybird-Dark</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Icon Theme</span>
+          <span class="settings-value">Papirus-Dark</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Cursor Theme</span>
+          <span class="settings-value">Adwaita</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Window Buttons</span>
+          <span class="settings-value">← Close / Minimize / Maximize</span>
+        </div>
+      </div>
+      <div class="settings-section"><div class="settings-section-title">Wallpaper</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;">
+          <div style="border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;" onclick="this.style.borderColor='#2997ff'">
+            <img src="foxos_wallpaper.jpg" style="width:100%;display:block;">
+            <div style="font-size:10px;color:var(--text-dim);padding:4px;text-align:center;">FoxOS Default</div>
+          </div>
+        </div>
+      </div>`;
+  } else if (tab === 'users') {
+    main.innerHTML = `
+      <div class="settings-header">Users</div>
+      <div class="settings-subheader">Manage user accounts</div>
+      <div class="settings-section"><div class="settings-section-title">Current User</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(50,50,50,0.4);border-radius:10px;margin-bottom:12px;">
+          <div style="width:52px;height:52px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;">👤</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);">TEO</div>
+            <div style="font-size:12px;color:var(--text-dim);">Administrator</div>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
+function simulateUpdateCheck() {
+  const btn = document.getElementById('checkUpdateBtn');
+  const prog = document.getElementById('updateProgress');
+  const bar = document.getElementById('updateBar');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  prog.style.display = 'block';
+  let pct = 0;
+  const iv = setInterval(() => {
+    pct += Math.random() * 15;
+    if (pct >= 100) { pct = 100; clearInterval(iv); }
+    bar.style.width = pct + '%';
+    if (pct >= 100) {
+      btn.textContent = 'You Are Up to Date';
+      btn.style.background = '#28c840';
+      setTimeout(() => {
+        prog.style.display = 'none';
+        bar.style.width = '0%';
+        btn.textContent = 'Check for Updates';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 1500);
+    }
+  }, 150);
+}
+
+/* ==================== FILES ==================== */
+const FS = {
+  'Home': { type:'folder', children:{
+    'Documents': {type:'folder', children:{
+      'report.pdf':{type:'file',icon:'📄'},'notes.txt':{type:'file',icon:'📝'}
+    }},
+    'Pictures': {type:'folder', children:{
+      'vacation.jpg':{type:'file',icon:'🖼️'},'screenshot.png':{type:'file',icon:'🖼️'}
+    }},
+    'Downloads': {type:'folder', children:{
+      'foxos.iso':{type:'file',icon:'💿'}
+    }},
+    'Music': {type:'folder', children:{}},
+    'Videos': {type:'folder', children:{}},
+    '.bashrc':{type:'file',icon:'📝'},'.config':{type:'folder',children:{}}
+  }},
+  'Filesystem': { type:'folder', children:{
+    'etc':{type:'folder',children:{}},
+    'usr':{type:'folder',children:{
+      'bin':{type:'folder',children:{}},
+      'lib':{type:'folder',children:{}},
+      'share':{type:'folder',children:{}}
+    }},
+    'var':{type:'folder',children:{}},
+    'tmp':{type:'folder',children:{}}
+  }},
+  'Computer': { type:'folder', children:{
+    'Storage':{type:'folder',children:{
+      'Filesystem (512GB)':{type:'file',icon:'💾'}
+    }},
+    'Network':{type:'folder',children:{}}
+  }}
+};
+
+function openFiles() {
+  const content = `
+    <div style="display:flex;flex:1;overflow:hidden;">
+      <div class="files-sidebar">
+        <div class="files-sidebar-item" onclick="filesNav(this,'Home')">🏠 Home</div>
+        <div class="files-sidebar-item" onclick="filesNav(this,'Filesystem')">💻 Filesystem</div>
+        <div class="files-sidebar-item" onclick="filesNav(this,'Computer')">🖥️ Computer</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="files-path-bar" id="files-path">
+          <span>📁</span> <span id="files-path-text">Home</span>
+        </div>
+        <div class="files-content" id="files-content">
+        </div>
+      </div>
+    </div>`;
+  createWindow({id:'files', title:'Files', icon:'📁', width:680, height:460, content});
+  filesNav(null, 'Home');
+}
+
+function filesNav(el, path) {
+  if (el) {
+    el.parentElement.querySelectorAll('.files-sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+  }
+  const parts = path.split('/');
+  document.getElementById('files-path-text').textContent = path;
+  let node = FS;
+  for (const p of parts) { if (node[p]) node = node[p]; else node = node.children || node; }
+  const children = node.children || node;
+  const grid = document.getElementById('files-content');
+  if (!children || Object.keys(children).length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim);font-size:14px;">This folder is empty</div>';
+    return;
+  }
+  grid.innerHTML = '<div class="files-grid">' + Object.entries(children).map(([name, item]) => {
+    if (item.type === 'folder') {
+      return `<div class="file-item" ondblclick="filesNav(null, '${path}/${name}')">
+        <div class="file-icon">📁</div>
+        <div class="file-name">${name}</div>
+      </div>`;
+    } else {
+      return `<div class="file-item">
+        <div class="file-icon">${item.icon || '📄'}</div>
+        <div class="file-name">${name}</div>
+      </div>`;
+    }
+  }).join('') + '</div>';
+}
+
+/* ==================== TERMINAL ==================== */
+function openTerminal() {
+  const content = `
+    <div class="terminal-body" id="term-body" ondblclick="document.getElementById('term-input').focus()">
+      <div class="terminal-line"><span class="terminal-out">FoxOS Terminal — bash 5.2.21</span></div>
+      <div class="terminal-line"><span class="terminal-out">Type 'help' for available commands.</span></div>
+      <div id="term-output"></div>
+      <div class="terminal-line">
+        <span class="terminal-prompt">teo@foxos:~$ </span>
+        <input class="terminal-input" id="term-input" type="text" autocomplete="off" spellcheck="false"
+          onkeydown="termKey(event)">
+      </div>
+    </div>`;
+  createWindow({id:'terminal', title:'Terminal', icon:'⬛', width:660, height:400, minWidth:300, minHeight:200, content});
+  setTimeout(() => document.getElementById('term-input')?.focus(), 50);
+}
+
+function termKey(e) {
+  if (e.key !== 'Enter') return;
+  const input = document.getElementById('term-input');
+  const out = document.getElementById('term-output');
+  const cmd = input.value.trim();
+  input.value = '';
+  const termLine = document.createElement('div');
+  termLine.className = 'terminal-line';
+  termLine.innerHTML = `<span class="terminal-prompt">teo@foxos:~$ </span><span class="terminal-cmd">${escHtml(cmd)}</span>`;
+  out.appendChild(termLine);
+  const result = termExec(cmd);
+  if (result) {
+    const resEl = document.createElement('div');
+    resEl.className = 'terminal-line';
+    resEl.innerHTML = `<span class="terminal-out">${escHtml(result)}</span>`;
+    out.appendChild(resEl);
+  }
+  document.getElementById('term-body').scrollTop = document.getElementById('term-body').scrollHeight;
+}
+
+function termExec(cmd) {
+  const c = cmd.toLowerCase().split(' ')[0];
+  switch(c) {
+    case 'help': return 'help  clear  neofetch  date  whoami  uname  ls  pwd  echo  cat';
+    case 'clear': document.getElementById('term-output').innerHTML = ''; return '';
+    case 'whoami': return 'teo';
+    case 'date': return new Date().toString();
+    case 'pwd': return '/home/teo';
+    case 'uname': return 'Linux foxos 6.8.0-51-generic x86_64 GNU/Linux';
+    case 'echo': return cmd.slice(5);
+    case 'neofetch':
+      return `         .:oO${''.padEnd(22,'0')}Oo:.        \n`+
+             `       .:dOOOOOO${''.padEnd(14,'0')}d:.      \n`+
+             `     .:oO${''.padEnd(22,'0')}Oo:        \n`+
+             `   .:dOOOOOO${''.padEnd(14,'0')}d:.          \n`+
+             `   :OO${''.padEnd(22,'0')}OO:              \n`+
+             `   :OO${''.padEnd(22,'0')}OO:   FoxOS v0.1   \n`+
+             `   :OO${''.padEnd(22,'0')}OO:   2026.04.13   \n`+
+             `   :OO${''.padEnd(22,'0')}OO:              \n`+
+             `   'dOOOOOO${''.padEnd(14,'0')}d:'            \n`+
+             `     ':oO${''.padEnd(22,'0')}Oo:'              \n`+
+             `       .:dOOOOOOb.          OS: FoxOS v0.1\n`+
+             `         '':oO0Oo:''         Host: Custom Build\n`+
+             `                          Kernel: 6.8.0-51-generic\n`+
+             `                          Shell: bash 5.2.21\n`+
+             `                          Resolution: 1920x1080\n`+
+             `                          Theme: Greybird-Dark\n`+
+             `                          Icons: Papirus-Dark\n`+
+             `                          CPU: Intel i5-12400F\n`+
+             `                          GPU: NVIDIA RTX 3060\n`+
+             `                          Memory: 7.6G / 16G';
+    case 'ls': return 'Documents  Downloads  Pictures  Music  Videos';
+    case 'cat': return 'This is a simulated filesystem. Check the Files app for real navigation.';
+    default: return c ? `bash: ${c}: command not found`;
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+/* ==================== CALCULATOR ==================== */
+let calcVal = '0';
+let calcMem = null;
+let calcOp = null;
+let calcNewNum = true;
+
+function openCalculator() {
+  const content = `
+    <div class="calc-display" id="calc-display">0</div>
+    <div class="calc-buttons">
+      <button class="calc-btn fn" onclick="calcC()">AC</button>
+      <button class="calc-btn fn" onclick="calcSign()">±</button>
+      <button class="calc-btn fn" onclick="calcPct()">%</button>
+      <button class="calc-btn op" onclick="calcOpClick('/')">÷</button>
+      <button class="calc-btn" onclick="calcDigit('7')">7</button>
+      <button class="calc-btn" onclick="calcDigit('8')">8</button>
+      <button class="calc-btn" onclick="calcDigit('9')">9</button>
+      <button class="calc-btn op" onclick="calcOpClick('*')">×</button>
+      <button class="calc-btn" onclick="calcDigit('4')">4</button>
+      <button class="calc-btn" onclick="calcDigit('5')">5</button>
+      <button class="calc-btn" onclick="calcDigit('6')">6</button>
+      <button class="calc-btn op" onclick="calcOpClick('-')">−</button>
+      <button class="calc-btn" onclick="calcDigit('1')">1</button>
+      <button class="calc-btn" onclick="calcDigit('2')">2</button>
+      <button class="calc-btn" onclick="calcDigit('3')">3</button>
+      <button class="calc-btn op" onclick="calcOpClick('+')">+</button>
+      <button class="calc-btn" onclick="calcDigit('0')" style="grid-column:span 2;text-align:left;padding-left:20px;">0</button>
+      <button class="calc-btn" onclick="calcDot()">.</button>
+      <button class="calc-btn equals" onclick="calcEquals()">=</button>
+    </div>`;
+  createWindow({id:'calculator', title:'Calculator', icon:'🔢', width:300, height:420, minWidth:260, minHeight:380, content});
+}
+
+function calcDigit(d) {
+  if (calcNewNum) { calcVal = d; calcNewNum = false; }
+  else { if (calcVal === '0' && d !== '.') calcVal = d; else calcVal += d; }
+  updateCalc();
+}
+function calcDot() { if (calcNewNum) { calcVal = '0.'; calcNewNum = false; } else if (!calcVal.includes('.')) calcVal += '.'; updateCalc(); }
+function calcC() { calcVal = '0'; calcMem = null; calcOp = null; calcNewNum = true; updateCalc(); }
+function calcSign() { calcVal = String(-parseFloat(calcVal)); updateCalc(); }
+function calcPct() { calcVal = String(parseFloat(calcVal) / 100); updateCalc(); }
+function calcOpClick(op) { if (calcOp && !calcNewNum) calcEquals(); calcMem = parseFloat(calcVal); calcOp = op; calcNewNum = true; }
+function calcEquals() { if (!calcOp || calcMem === null) return; let r; switch(calcOp) { case '+': r = calcMem + parseFloat(calcVal); break; case '-': r = calcMem - parseFloat(calcVal); break; case '*': r = calcMem * parseFloat(calcVal); break; case '/': r = calcVal === '0' ? 'Error' : calcMem / parseFloat(calcVal); break; } calcVal = String(r); calcOp = null; calcMem = null; calcNewNum = true; updateCalc(); }
+function updateCalc() { const d = document.getElementById('calc-display'); if (d) d.textContent = calcVal.length > 12 ? parseFloat(calcVal).toExponential(6) : calcVal; }
+
+/* ==================== APP STORE ==================== */
+const STORE_APPS = [
+  {name:'Firefox',dev:'Mozilla',icon:'🌐',cat:'Browser',size:'215 MB',desc:'Fast, private web browser',rating:'⭐⭐⭐⭐⭐'},
+  {name:'VLC Media Player',dev:'VideoLAN',icon:'🎬',cat:'Media',size:'102 MB',desc:'Plays any video format',rating:'⭐⭐⭐⭐⭐'},
+  {name:'LibreOffice',dev:'The Document Foundation',icon:'📊',cat:'Office',size:'324 MB',desc:'Full office suite',rating:'⭐⭐⭐⭐'},
+  {name:'GIMP',dev:'GIMP Team',icon:'🎨',cat:'Graphics',size:'148 MB',desc:'GNU image editor',rating:'⭐⭐⭐⭐'},
+  {name:'Wine 11',dev:'WineHQ',icon:'🍷',cat:'Compatibility',size:'78 MB',desc:'Run Windows apps on Linux',rating:'⭐⭐⭐⭐'},
+  {name:'VS Code',dev:'Microsoft',icon:'💻',cat:'Development',size:'156 MB',desc:'Code editor with extensions',rating:'⭐⭐⭐⭐⭐'},
+  {name:'Steam',dev:'Valve',icon:'🎮',cat:'Games',size:'1.2 GB',desc:'PC gaming platform',rating:'⭐⭐⭐⭐'},
+  {name:'Blender',dev:'Blender Foundation',icon:'🧊',cat:'3D Graphics',size:'412 MB',desc:'3D creation suite',rating:'⭐⭐⭐⭐⭐'},
+  {name:'Thunderbird',dev:'Mozilla',icon:'📧',cat:'Email',size:'198 MB',desc:'Email and chat client',rating:'⭐⭐⭐⭐'},
+  {name:'Spotify',dev:'Spotify S.A.',icon:'🎵',cat:'Music',size:'89 MB',desc:'Music streaming client',rating:'⭐⭐⭐⭐'},
+];
+
+function openAppStore() {
+  const content = `
+    <div class="appstore-bar">
+      <input class="appstore-search" placeholder="Search App Store…" oninput="storeSearch(this.value)">
+    </div>
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:var(--text-dim);">Featured Apps</span>
+    </div>
+    <div class="app-grid" id="store-grid">
+      ${STORE_APPS.map(a => storeCard(a)).join('')}
+    </div>`;
+  createWindow({id:'appstore', title:'App Store', icon:'🛒', width:700, height:500, minWidth:500, content});
+}
+
+function storeCard(a) {
+  return `<div class="app-card" onclick="storeAppDetail('${a.name}')">
+    <div class="app-icon-large">${a.icon}</div>
+    <div class="app-name">${a.name}</div>
+    <div class="app-dev">${a.dev}</div>
+    <div class="app-get-btn">Get</div>
+  </div>`;
+}
+
+function storeSearch(q) {
+  const grid = document.getElementById('store-grid');
+  const results = q ? STORE_APPS.filter(a => a.name.toLowerCase().includes(q.toLowerCase()) || a.dev.toLowerCase().includes(q.toLowerCase())) : STORE_APPS;
+  grid.innerHTML = results.map(a => storeCard(a)).join('');
+}
+
+function storeAppDetail(name) {
+  const a = STORE_APPS.find(x => x.name === name);
+  if (!a) return;
+  const content = `
+    <div style="display:flex;gap:20px;padding:20px;border-bottom:1px solid var(--border);">
+      <div style="font-size:64px;flex-shrink:0;">${a.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;">${a.name}</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">${a.dev} · ${a.size}</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">${a.desc}</div>
+        <div style="font-size:12px;color:var(--text-dim);">${a.rating} · <span style="color:var(--fox-blue);cursor:pointer;">View all versions</span></div>
+      </div>
+    </div>
+    <div style="padding:20px;flex:1;overflow-y:auto;">
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;">Screenshots</div>
+      <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;">
+        <div style="width:180px;height:120px;background:rgba(50,50,50,0.5);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:48px;">${a.icon}</div>
+        <div style="width:180px;height:120px;background:rgba(50,50,50,0.5);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:48px;">${a.icon}</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:rgba(41,151,255,0.1);border:1px solid rgba(41,151,255,0.2);border-radius:8px;font-size:12px;color:var(--text-dim);">
+        ℹ️ This is a web simulation. ${a.name} would be installed via <code style="color:var(--fox-blue);">apt install</code> or <code style="color:var(--fox-blue);">snap</code> in the real FoxOS.
+      </div>
+    </div>`;
+  createWindow({id:'appdetail', title:a.name, icon:a.icon, width:560, height:420, content});
+}
+
+/* ==================== TEXT EDITOR ==================== */
+function openEditor() {
+  const content = `
+    <div class="editor-bar">
+      <span class="editor-bar-btn" onclick="editorNew()">New</span>
+      <span class="editor-bar-btn">Open</span>
+      <span class="editor-bar-btn">Save</span>
+      <span class="editor-bar-btn" style="margin-left:auto;font-size:11px;color:var(--text-dim);" id="editor-status">Plain Text</span>
+    </div>
+    <textarea class="editor-textarea" id="editor-text" placeholder="Start typing…">Welcome to FoxOS TextEdit!
+
+This is a simple text editor running in the FoxOS web simulation.
+
+Available keyboard shortcuts:
+  ⌘N  New document
+  ⌘O  Open file
+  ⌘S  Save file
+  ⌘Z  Undo
+  ⌘F  Find
+
+Notes:
+- This editor is for quick notes and text editing
+- For full file management, use the Files app
+- The real FoxOS terminal supports vim, nano, and more
+
+FoxOS v0.1 — Built 2026.04.13
+</textarea>`;
+  createWindow({id:'editor', title:'TextEdit', icon:'📝', width:600, height:420, minWidth:300, content});
+}
+function editorNew() { document.getElementById('editor-text').value = ''; }
+
+/* ==================== SYSTEM MONITOR ==================== */
+function openSysmon() {
+  const content = `
+    <div class="sysmon-header">
+      <div class="sysmon-stat">
+        <div class="sysmon-stat-label">CPU</div>
+        <div class="sysmon-stat-value" id="sm-cpu">—</div>
+        <div class="sysmon-bar"><div class="sysmon-bar-fill cpu-bar" id="sm-cpu-bar" style="width:0%"></div></div>
+      </div>
+      <div class="sysmon-stat">
+        <div class="sysmon-stat-label">Memory</div>
+        <div class="sysmon-stat-value" id="sm-mem">—</div>
+        <div class="sysmon-stat-sub" id="sm-mem-used">— / — GB</div>
+        <div class="sysmon-bar"><div class="sysmon-bar-fill mem-bar" id="sm-mem-bar" style="width:0%"></div></div>
+      </div>
+      <div class="sysmon-stat">
+        <div class="sysmon-stat-label">Disk</div>
+        <div class="sysmon-stat-value" id="sm-disk">—</div>
+        <div class="sysmon-stat-sub" id="sm-disk-used">— / — GB</div>
+        <div class="sysmon-bar"><div class="sysmon-bar-fill disk-bar" id="sm-disk-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;padding:6px 12px;background:rgba(30,30,30,0.4);border-bottom:1px solid var(--border);">
+      <span style="font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Processes</span>
+    </div>
+    <div class="sysmon-procs" id="sm-procs">
+      <div class="proc-row" style="font-weight:600;color:var(--text-dim);font-size:11px;">
+        <span>PID</span><span>Name</span><span style="text-align:right;">CPU%</span><span style="text-align:right;">MEM%</span>
+      </div>
+    </div>`;
+  createWindow({id:'sysmon', title:'Activity Monitor', icon:'📊', width:620, height:480, minWidth:480, content});
+  updateSysmon();
+  window._smInterval = setInterval(updateSysmon, 3000);
+}
+
+const SM_PROCS = [
+  ['1','systemd','0.1','0.4'],['245','gnome-shell','2.3','1.8'],['1234','firefox','5.1','3.2'],
+  ['567','Xorg','1.8','0.9'],['890','pulseaudio','0.3','0.2'],['1023','gnome-terminal','0.8','0.5'],
+  ['1100','nautilus','0.4','0.6'],['1200','wine','12.4','8.7'],['1345','code','3.2','2.1'],
+  ['1456','steam','8.7','6.4'],['1567','discord','2.1','1.5'],['1678','spotify','1.3','0.9'],
+];
+const SM_NAMES = ['systemd','gnome-shell','firefox','Xorg','pulseaudio','gnome-terminal','nautilus','wine','code','steam','discord','spotify','dconf','gvfsd','dbus-daemon','NetworkManager','cups','bluetoothd'];
+const SM_PIDS = [1,245,567,890,1023,1100,1200,1345,1456,1567,1678,1789,1890,2001,2112,2223,2334,2445,2556];
+
+function updateSysmon() {
+  const el = document.getElementById('sm-cpu');
+  if (!el) { clearInterval(window._smInterval); return; }
+  const cpu = (Math.random() * 25 + 8).toFixed(1);
+  const memUsed = (Math.random() * 3 + 2).toFixed(1);
+  const memTotal = 16;
+  const diskUsed = (Math.random() * 200 + 100).toFixed(0);
+  const diskTotal = 512;
+  el.textContent = cpu + '%';
+  document.getElementById('sm-cpu-bar').style.width = cpu + '%';
+  document.getElementById('sm-mem').textContent = memUsed + ' GB';
+  document.getElementById('sm-mem-used').textContent = memUsed + ' / ' + memTotal + ' GB';
+  document.getElementById('sm-mem-bar').style.width = (memUsed / memTotal * 100) + '%';
+  document.getElementById('sm-disk').textContent = diskUsed + ' GB';
+  document.getElementById('sm-disk-used').textContent = diskUsed + ' / ' + diskTotal + ' GB';
+  document.getElementById('sm-disk-bar').style.width = (diskUsed / diskTotal * 100) + '%';
+
+  // Randomize process data
+  const procs = document.getElementById('sm-procs');
+  if (!procs) return;
+  let html = `<div class="proc-row" style="font-weight:600;color:var(--text-dim);font-size:11px;">
+    <span>PID</span><span>Name</span><span style="text-align:right;">CPU%</span><span style="text-align:right;">MEM%</span>
+  </div>`;
+  for (let i = 0; i < 12; i++) {
+    const pid = SM_PIDS[i];
+    const name = SM_NAMES[i];
+    const cpuP = (Math.random() * 15).toFixed(1);
+    const memP = (Math.random() * 8).toFixed(1);
+    html += `<div class="proc-row">
+      <span class="proc-pid">${pid}</span>
+      <span class="proc-name">${name}</span>
+      <span class="proc-cpu">${cpuP}%</span>
+      <span class="proc-mem">${memP}%</span>
+    </div>`;
+  }
+  procs.innerHTML = html;
+}
+
+/* ==================== BOOT SEQUENCE (auto on first load) ==================== */
+(function bootSeq() {
+  // Show welcome on first launch
+  setTimeout(() => {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    el.id = 'boot-screen';
+    el.innerHTML = `
+      <div style="text-align:center;animation:fadeIn 1s ease;">
+        <div style="font-size:80px;margin-bottom:16px;">🍎</div>
+        <div style="font-size:28px;font-weight:700;color:#fff;margin-bottom:8px;">FoxOS</div>
+        <div style="font-size:16px;color:rgba(255,255,255,0.6);margin-bottom:24px;">Loading your desktop…</div>
+        <div style="width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 auto;overflow:hidden;">
+          <div id="boot-bar" style="height:100%;background:#2997ff;border-radius:2px;width:0%;transition:width 0.3s;"></div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:12px;" id="boot-status">Initializing…</div>
+      </div>
+      <style>@keyframes fadeIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}</style>`;
+    document.body.appendChild(el);
+
+    const steps = [
+      [10,'Loading kernel modules…'],
+      [25,'Starting systemd services…'],
+      [40,'Mounting filesystems…'],
+      [55,'Starting LightDM…'],
+      [70,'Loading FoxOS desktop…'],
+      [85,'Applying theme…'],
+      [100,'Ready!'],
+    ];
+
+    let si = 0;
+    function nextStep() {
+      if (si >= steps.length) {
+        setTimeout(() => {
+          const bs = document.getElementById('boot-screen');
+          if (bs) bs.style.opacity = '0';
+          setTimeout(() => { if (document.getElementById('boot-screen')) document.getElementById('boot-screen').remove(); }, 400);
+          // Show notification
+          setTimeout(() => showNotif('Welcome to FoxOS! 🍎', 'Your FoxOS desktop is ready. v0.1 — build 2026.04.13'), 300);
+        }, 400);
+        return;
+      }
+      const [pct, msg] = steps[si++];
+      document.getElementById('boot-bar').style.width = pct + '%';
+      document.getElementById('boot-status').textContent = msg;
+      setTimeout(nextStep, 350 + Math.random() * 200);
+    }
+    setTimeout(nextStep, 500);
+  }, 800);
+})();
+
+function showNotif(title, body) {
+  const notif = document.getElementById('notif');
+  document.getElementById('notifTitle').textContent = title;
+  document.getElementById('notifBody').textContent = body;
+  notif.classList.add('show');
+  setTimeout(() => notif.classList.remove('show'), 5000);
+}
+</script>
 </body>
 </html>
