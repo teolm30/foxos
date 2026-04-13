@@ -1377,8 +1377,6 @@ function updateSysmon() {
 }
 
 /* ==================== BOOT SEQUENCE ==================== */
-
-console.log('[FoxOS] Page loaded, starting boot sequence...');
 (function bootSeq() {
   const splash = document.createElement('div');
   splash.id = 'boot-splash';
@@ -1390,6 +1388,7 @@ console.log('[FoxOS] Page loaded, starting boot sequence...');
     <div id="splash-status" style="font-size:12px;color:rgba(255,255,255,0.35);min-height:16px;">Initializing…</div>
   `;
   document.body.appendChild(splash);
+  console.log('[FoxOS] Boot splash shown');
 
   const steps = [
     [15,'Loading kernel modules…'],
@@ -1476,5 +1475,4 @@ function doLogin() {
 }
 </script>
 </body>
-</html
-console.log('[FoxOS] Boot done, showing login screen...');>
+</html>
