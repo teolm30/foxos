@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoxOS — Real Linux Desktop in Your Browser</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 50%, #0f0f23 100%);
+  min-height: 100vh; color: #e0e0e0; overflow-x: hidden;
+}
+.hero { text-align: center; padding: 80px 20px 40px; position: relative; }
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.logo svg { width: 110px; height: 110px; filter: drop-shadow(0 0 30px rgba(0,210,255,0.4)); }
+h1 { font-size: 3.5rem; font-weight: 700; letter-spacing: -2px; margin: 20px 0 10px; background: linear-gradient(135deg, #00d2ff, #7b2dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tagline { font-size: 1.3rem; color: #888; margin-bottom: 40px; }
+.real-desktop {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px); border-radius: 20px; padding: 50px; max-width: 580px;
+  margin: 0 auto 40px; text-align: center;
+}
+.version { font-size: 0.85rem; color: #00d2ff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+.btn {
+  display: inline-block; background: linear-gradient(135deg, #00d2ff, #7b2dff);
+  color: #fff; padding: 16px 44px; border-radius: 60px; font-size: 1.15rem; font-weight: 600;
+  text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 30px rgba(0,210,255,0.3); margin: 10px;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,210,255,0.4); }
+.btn.green { background: linear-gradient(135deg, #28ca41, #00c853); box-shadow: 0 8px 30px rgba(40,202,65,0.3); }
+.btn.green:hover { box-shadow: 0 12px 40px rgba(40,202,65,0.4); }
+.features { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+.features h2 { text-align: center; font-size: 1.8rem; margin-bottom: 35px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 26px; }
+.card h3 { color: #00d2ff; margin-bottom: 8px; font-size: 1rem; }
+.card p { color: #888; line-height: 1.6; font-size: 0.88rem; }
+.features-demo { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+.features-demo h2 { text-align: center; }
+.screenshot { width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.5); margin-bottom: 30px; }
+footer { text-align: center; padding: 30px; color: #444; font-size: 0.82rem; }
+.live-badge {
+  display: inline-block; background: rgba(40,202,65,0.15); border: 1px solid rgba(40,202,65,0.3);
+  color: #28ca41; padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; margin-bottom: 16px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="logo">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d2ff"/><stop offset="100%" stop-color="#7b2dff"/></linearGradient></defs>
+      <circle cx="50" cy="50" r="48" fill="none" stroke="url(#fg)" stroke-width="3"/>
+      <circle cx="50" cy="50" r="35" fill="rgba(0,210,255,0.1)"/>
+      <polygon points="50,8 62,35 50,28 38,35" fill="url(#fg)"/>
+      <polygon points="25,30 38,50 30,48 20,40" fill="url(#fg)" opacity="0.8"/>
+      <polygon points="75,30 62,50 70,48 80,40" fill="url(#fg)" opacity="0.8"/>
+      <ellipse cx="50" cy="55" rx="20" ry="18" fill="none" stroke="url(#fg)" stroke-width="2.5"/>
+      <circle cx="42" cy="50" r="3" fill="#00d2ff"/>
+      <circle cx="58" cy="50" r="3" fill="#7b2dff"/>
+      <path d="M35 62 Q50 72 65 62" fill="none" stroke="url(#fg)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <h1>FoxOS</h1>
+  <p class="tagline">A real Linux desktop OS — in your browser, anywhere in the world.</p>
+  <div class="real-desktop">
+    <div class="live-badge">● LIVE DEMO RUNNING</div>
+    <p class="version">Version 1.0</p>
+    <h2 style="font-size:1.3rem;margin-bottom:8px">Try the Real Desktop Now</h2>
+    <p style="color:#888;font-size:0.85rem;margin-bottom:24px">
+      A complete OS running on Teo's Linux PC — not a screenshot.<br>
+      Files, Terminal, System Monitor, Settings, Calculator — all real.
+    </p>
+    <a class="btn green" href="https://tablets-christina-signals-delayed.trycloudflare.com" target="_blank">🖥️ Open FoxOS Desktop</a>
+    <a class="btn" href="https://github.com/teolm30/foxos/releases/tag/v1.0.0" target="_blank">⬇ Download ISO</a>
+  </div>
+</div>
+<div class="features-demo">
+  <h2>What's Inside FoxOS</h2>
+  <img class="screenshot" src="foxos_desktop.png" alt="FoxOS Desktop">
+  <div class="grid">
+    <div class="card"><h3>🖥️ Real Web Desktop</h3><p>Complete window manager in the browser. Drag windows, resize, minimize, maximize — all functional.</p></div>
+    <div class="card"><h3>📁 Real File Manager</h3><p>Browse and edit actual files on the Linux filesystem. Create folders, open files in the editor.</p></div>
+    <div class="card"><h3>⌨️ Real Terminal</h3><p>Execute real Linux commands. ls, cat, ps, df, free, neofetch — all work.</p></div>
+    <div class="card"><h3>📊 Real System Monitor</h3><p>See real CPU, RAM, disk usage from psutil. View and kill real processes.</p></div>
+    <div class="card"><h3>⚙️ Real Settings</h3><p>Volume, brightness, network, users, display — all backed by real Linux system calls.</p></div>
+    <div class="card"><h3>🔄 Software Updates</h3><p>Checks GitHub for new versions. Shows real update history and version info.</p></div>
+    <div class="card"><h3>🍷 Wine 11 Included</h3><p>Run Windows apps including Roblox Studio directly on the Linux desktop.</p></div>
+    <div class="card"><h3>💿 Bootable ISO</h3><p>Download FoxOS as a bootable USB — runs natively on any x86_64 hardware.</p></div>
+  </div>
+</div>
+<footer>FoxOS — Built with ❤️ by Teo & Jarvis · <a href="https://github.com/teolm30/foxos" style="color:#555">GitHub</a></footer>
+</body>
+</html>
