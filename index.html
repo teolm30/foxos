@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoxOS — Modern Linux Desktop</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 50%, #0f0f23 100%);
+  min-height: 100vh;
+  color: #e0e0e0;
+  overflow-x: hidden;
+}
+.hero {
+  text-align: center;
+  padding: 80px 20px 40px;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,210,255,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.logo {
+  display: inline-block;
+  margin-bottom: 30px;
+}
+.logo svg { width: 120px; height: 120px; filter: drop-shadow(0 0 30px rgba(0,210,255,0.4)); }
+h1 { font-size: 4rem; font-weight: 700; letter-spacing: -2px; margin-bottom: 10px; background: linear-gradient(135deg, #00d2ff, #7b2dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tagline { font-size: 1.4rem; color: #888; margin-bottom: 40px; }
+.download-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 50px;
+  max-width: 500px;
+  margin: 0 auto 60px;
+  text-align: center;
+}
+.version { font-size: 0.9rem; color: #00d2ff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+.size { font-size: 2rem; font-weight: 300; margin-bottom: 8px; }
+.date { color: #666; font-size: 0.9rem; margin-bottom: 30px; }
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #00d2ff, #7b2dff);
+  color: #fff;
+  padding: 18px 48px;
+  border-radius: 60px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 30px rgba(0,210,255,0.3);
+  border: none;
+  cursor: pointer;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,210,255,0.4); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+#status { margin-top: 20px; color: #aaa; font-size: 0.95rem; min-height: 24px; }
+#progress-container { display: none; margin-top: 20px; }
+#progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; overflow: hidden; }
+#progress-bar { background: linear-gradient(90deg, #00d2ff, #7b2dff); height: 100%; width: 0%; transition: width 0.3s; border-radius: 10px; }
+#progress-text { margin-top: 8px; font-size: 0.85rem; color: #888; }
+.features { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+.features h2 { text-align: center; font-size: 2rem; margin-bottom: 40px; font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 30px;
+}
+.card h3 { color: #00d2ff; margin-bottom: 10px; font-size: 1.1rem; }
+.card p { color: #888; line-height: 1.6; font-size: 0.95rem; }
+.macos-screenshot {
+  max-width: 500px;
+  margin: 40px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.macos-screenshot img { width: 100%; display: block; }
+footer { text-align: center; padding: 30px; color: #444; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="logo">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#00d2ff"/>
+          <stop offset="100%" stop-color="#7b2dff"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="48" fill="none" stroke="url(#fg)" stroke-width="3"/>
+      <circle cx="50" cy="50" r="35" fill="rgba(0,210,255,0.1)"/>
+      <polygon points="50,8 62,35 50,28 38,35" fill="url(#fg)"/>
+      <polygon points="25,30 38,50 30,48 20,40" fill="url(#fg)" opacity="0.8"/>
+      <polygon points="75,30 62,50 70,48 80,40" fill="url(#fg)" opacity="0.8"/>
+      <ellipse cx="50" cy="55" rx="20" ry="18" fill="none" stroke="url(#fg)" stroke-width="2.5"/>
+      <circle cx="42" cy="50" r="3" fill="#00d2ff"/>
+      <circle cx="58" cy="50" r="3" fill="#7b2dff"/>
+      <path d="M35 62 Q50 72 65 62" fill="none" stroke="url(#fg)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <h1>FoxOS</h1>
+  <p class="tagline">A modern Linux desktop, reimagined.</p>
+  <div class="download-card">
+    <p class="version">Version 1.0</p>
+    <p class="size">2.3 GB</p>
+    <p class="date">Updated: April 2026</p>
+    <button class="btn" id="downloadBtn" onclick="downloadISO()">⬇ Download ISO</button>
+    <div id="status"></div>
+    <div id="progress-container">
+      <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+      <div id="progress-text"></div>
+    </div>
+  </div>
+  <div class="macos-screenshot">
+    <img src="foxos_desktop.png" alt="FoxOS Desktop">
+  </div>
+</div>
+<div class="features">
+  <h2>What's Inside</h2>
+  <div class="grid">
+    <div class="card"><h3>🦊 macOS-Inspired Design</h3><p>Translucent panels, beautiful dark theme, and a dock that feels right at home.</p></div>
+    <div class="card"><h3>⚡ Lightning Fast</h3><p>Built on Ubuntu 24.04 LTS. Boots in seconds, runs smoothly on any modern hardware.</p></div>
+    <div class="card"><h3>🎮 Ready to Play</h3><p>Comes with Wine 11 — run Windows apps including Roblox Studio directly.</p></div>
+    <div class="card"><h3>🔒 Secure & Private</h3><p>No tracking, no telemetry. Your system, your rules. Made by Teo & Jarvis.</p></div>
+  </div>
+</div>
+<footer>FoxOS — Built with ❤️ by Teo & Jarvis</footer>
+<script>
+// Direct download URLs — try cloudflare tunnel first
+const ISO_URLS = [
+  'https://removed-seekers-archive-yet.trycloudflare.com/FoxOS-1.0.iso',
+];
+
+async function findISOUrl() {
+  for (const url of ISO_URLS) {
+    try {
+      const resp = await fetch(url, { method: 'HEAD' });
+      if (resp.ok) return url;
+    } catch(e) {}
+  }
+  throw new Error('Download server unreachable. Make sure your PC is online.');
+}
+
+function formatSize(bytes) {
+  if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + ' GB';
+  if (bytes >= 1e6) return (bytes / 1e6).toFixed(0) + ' MB';
+  return (bytes / 1e3).toFixed(0) + ' KB';
+}
+
+async function downloadISO() {
+  const btn = document.getElementById('downloadBtn');
+  const status = document.getElementById('status');
+  const progContainer = document.getElementById('progress-container');
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+
+  btn.disabled = true;
+  btn.textContent = '🔍 Finding ISO...';
+  status.textContent = '';
+
+  try {
+    const url = await findISOUrl();
+    status.textContent = '⬇ Starting download...';
+
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('ISO not found on your PC. Make sure the FoxOS server is running.');
+
+    const contentLength = resp.headers.get('content-length');
+    const total = contentLength ? parseInt(contentLength) : 0;
+
+    progContainer.style.display = 'block';
+    let loaded = 0;
+
+    const reader = resp.body.getReader();
+    const chunks = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      loaded += value.length;
+      if (total > 0) {
+        const pct = Math.round((loaded / total) * 100);
+        progressBar.style.width = pct + '%';
+        progressText.textContent = `${formatSize(loaded)} / ${formatSize(total)} (${pct}%)`;
+      } else {
+        progressText.textContent = `${formatSize(loaded)} downloaded...`;
+      }
+    }
+
+    // Assemble blob and trigger download
+    const blob = new Blob(chunks);
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'FoxOS-1.0.iso';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+
+    status.textContent = '✅ Download complete!';
+    btn.textContent = '✅ Downloaded';
+    progressBar.style.width = '100%';
+    progressText.textContent = 'ISO saved to your downloads folder.';
+  } catch(err) {
+    status.textContent = '❌ ' + err.message;
+    btn.disabled = false;
+    btn.textContent = '⬇ Download ISO';
+    progContainer.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>
